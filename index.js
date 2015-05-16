@@ -18,29 +18,108 @@
     };
     app.use(allowCrossDomain);
 
-    function newClient(contract) {
-        var c = null;
+
+    /* ADD a new Client or return the identified */
+    function getClient(contract) {
+        var ret = null;
         Clients.forEach(function (e)
         {
             if (contract == e.contract) {
-                c = e;
+                ret = e;
             }
         });
+        return ret;
+    }
+    function newClient(contract) {
+        var c = getClient(contract);
         if (c) return c;
         var c = {
-            contract: contract
+            contract: contract,
+            currentReq: {}
         };
         Clients.push(c);
         return c;
-    };
+    }
+    function assignRequest(client, data) {
+        data = JSON.parse(data);
+        console.log('assign');
+        console.log(data);
+        console.log(data.what);
+        client.currentReq = {
+            title: data.what[0],
+            status: 'waiting for offers',
+            offerCount: 0,
+            data: data,
+            offers: []
+        };
+    }
 
     var Clients = [];
 
     app.get('/api/currentRequest', function (req, res) {
         var r = {
-            title: 'coucou'
+            title: 'Repair req',
+            status: 'waiting for offers',
+            offerCount: 0
         };
-        res.json(r);
+        if (req.query.contract && req.query.contract.length > 0) {
+            var client = getClient(req.query.contract);
+            if (client) {
+                res.status(200).json({
+                    res: true,
+                    data: {
+                        contract: req.query.contract,
+                        req: client.currentReq
+                    }
+                });
+            } else {
+                res.json({
+                    res: false,
+                    data: {
+                        msg: "No client for this contract number !"
+                    }
+                });
+            }
+        } else {
+            res.status(200).json({
+                res: false,
+                data: {
+                    msg: "No contract number !"
+                }
+            });
+        }
+    });
+
+    app.post('/api/pushRequest', urlencodedParser, function (req, res) {
+        console.log('push req');
+        console.log(req.body);
+
+        if (req.body && req.body.contract && req.body.contract.length > 0) {
+            var client = getClient(req.body.contract);
+            if (client) {
+                assignRequest(client, req.body.request);
+                res.status(200).json({
+                    res: true,
+                    data: {
+                        contract: req.body.contract,
+                    }
+                });
+            } else {
+                res.json({
+                    res: false,
+                    data: {
+                        msg: "No client for this contract number !"
+                    }
+                });
+            }
+        } else {
+            res.status(200).json({
+                data: {
+                    msg: 'No contract number !'
+                },
+                res: false
+            });
+        }
     });
 
     app.post('/api/login', urlencodedParser, function (req, res) {
