@@ -44,9 +44,9 @@
     });
 
     app.post('/api/login', urlencodedParser, function (req, res) {
-       console.log(' new login');
+       console.log('new login');
         //console.log(req.body);
-        if (!req.body && req.body.contract && req.body.contract.length > 0) {
+        if (req.body && req.body.contract && req.body.contract.length > 0) {
             console.log('contract is ok : ' + req.body.contract);
             res.status(200).json({
                 res: true,
