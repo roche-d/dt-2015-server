@@ -50,7 +50,8 @@
             status: 'waiting for offers',
             offerCount: 0,
             data: data,
-            offers: []
+            offers: [],
+            step: 1
         };
     }
 
