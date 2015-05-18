@@ -14,10 +14,11 @@
     //io.set('origins', '*localhost');
 
     var allowCrossDomain = function(req, res, next) {
+        console.log('allow');
         console.log(req.url);
         //res.header('Access-Control-Allow-Origin', '*');
         res.header('Access-Control-Allow-Origin',  "http://"+req.headers.host);
-        res.header('Access-Control-Allow-Origin',  "http://localhost:63342");
+        //res.header('Access-Control-Allow-Origin',  "http://localhost:63342");
         res.header("Access-Control-Allow-Headers", "X-Requested-With");
         res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
         res.header('Access-Control-Allow-Headers', 'Content-Type');
