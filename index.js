@@ -8,9 +8,6 @@
     var bodyParser = require('body-parser'); // Charge le middleware de gestion des paramètres
     var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
-    //var app = express();
-//, {origins: 'http://localhost:63342'}
-    //app.io.set('origins', '*:*');
 
     var allowCrossDomain = function(req, res, next) {
         console.log('allow');
@@ -27,7 +24,11 @@
 
         next();
     };
+
+
     app.use(allowCrossDomain);
+    app.use(bodyParser.json());
+
     app.io.use(function (socket, next) {
         console.log('middddddle');
         return next();
@@ -79,13 +80,58 @@
             step: 1
         };
     }
+    function assignOffer(client, data) {
+        if (client.currentReq) {
+            client.currentReq.offerCount++;
+            client.offers.push({
+                price: data.price,
+                msg: data.msg,
+                date: data.date
+            });
+        }
+    }
 
     var Clients = [];
 
-    /*what: 'Tyres change',
-     when: 'Today',
-     ccar: 'Yes',
-     where: 'Versailles'*/
+    app.post('/api/answerRequest', urlencodedParser, function (req, res) {
+        console.log('answer');
+        console.log(req.body);
+        if (!(req.query || req.query == 'fslkj45k54kjh')) {
+            res.json({
+                res: false,
+                data: {
+                    msg: "No authentifiation key !"
+                }
+            });
+        } else {
+
+
+            if (req.body && req.body.id && req.body.data && req.body.data.msg && req.body.data.price && req.body.data.date) {
+                var client = getClient(req.body.id);
+                if (client) {
+                    res.status(200).json({
+                        res: true,
+                        data: {}
+                    });
+                    assignOffer(client, req.body.data)
+                } else {
+                    res.json({
+                        res: false,
+                        data: {
+                            msg: "No client for this contract number !"
+                        }
+                    });
+                }
+            } else {
+                res.json({
+                    res: false,
+                    data: {
+                        msg: "Invalid arguments"
+                    }
+                });
+            }
+        }
+    });
 
     app.get('/api/getAllRequest', function (req, res) {
         console.log('all req ?');
