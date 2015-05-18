@@ -3,20 +3,31 @@
  */
 (function () {
 
-    var express = require('express');
+    var app = require('express.io')();
+    app.http().io();
+    var server = require('http').Server(app);
     var bodyParser = require('body-parser'); // Charge le middleware de gestion des paramètres
     var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
-    var app = express();
+    //var app = express();
+//, {origins: 'http://localhost:63342'}
+    //io.set('origins', '*localhost');
 
     var allowCrossDomain = function(req, res, next) {
-        res.header('Access-Control-Allow-Origin', '*');
+        //res.header('Access-Control-Allow-Origin', '*');
+        res.header('Access-Control-Allow-Origin',  "http://"+req.headers.host);
+        res.header('Access-Control-Allow-Origin',  "http://localhost:63342");
+        res.header("Access-Control-Allow-Headers", "X-Requested-With");
         res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
         res.header('Access-Control-Allow-Headers', 'Content-Type');
+        res.header('Access-Control-Allow-Credentials', 'true');
 
         next();
     };
     app.use(allowCrossDomain);
+    //app.io.use(allowCrossDomain);
+
+    //io.use(allowCrossDomain);
 
 
     /* ADD a new Client or return the identified */
@@ -56,6 +67,45 @@
     }
 
     var Clients = [];
+
+    /*what: 'Tyres change',
+     when: 'Today',
+     ccar: 'Yes',
+     where: 'Versailles'*/
+
+    app.get('/api/getAllRequest', function (req, res) {
+        console.log('all req ?');
+        console.log(req.query);
+        if (!(req.query || req.query == 'fslkj45k54kjh')) {
+            res.json({
+                res: false,
+                data: {
+                    msg: "No authentifiation key !"
+                }
+            });
+        } else {
+            console.log('good key');
+            var rep = [];
+            Clients.forEach(function (e) {
+                if (e && e.currentReq && e.currentReq.title) {
+                    console.log('there is something here');
+                    rep.push({
+                        name: 'Stephane',
+                        insurance: 'Direct Assurance',
+                        contract: 'Premium',
+                        req: e.currentReq.data,
+                        id: e.contract
+                    });
+                }
+            });
+            res.json({
+                res: true,
+                data: {
+                    requests: rep
+                }
+            });
+        }
+    });
 
     app.get('/api/currentRequest', function (req, res) {
         var r = {
@@ -148,11 +198,24 @@
 
     app.all('*', function (req, res) {
        console.log('coucou');
-        //console.log(req);
-        res.send('coucou');
+        console.log(req.url);
+        //res.send('coucou');
     });
 
     //console.log(app.)
+
+
+    /* REALTIME EVENT */
+    //var io = require('socket.io')(server);
+
+    app.io.on('connection', function (socket) {
+        console.log('new client');
+    });
+
+    app.io.on('*', function (socket) {
+        console.log('an event');
+    });
+
 
     app.listen(8080);
 
