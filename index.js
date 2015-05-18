@@ -5,7 +5,7 @@
 
     var app = require('express.io')();
     app.http().io();
-    var server = require('http').Server(app);
+    //var server = require('http').Server(app);
     var bodyParser = require('body-parser'); // Charge le middleware de gestion des paramètres
     var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
@@ -14,6 +14,7 @@
     //io.set('origins', '*localhost');
 
     var allowCrossDomain = function(req, res, next) {
+        console.log(req.url);
         //res.header('Access-Control-Allow-Origin', '*');
         res.header('Access-Control-Allow-Origin',  "http://"+req.headers.host);
         res.header('Access-Control-Allow-Origin',  "http://localhost:63342");
@@ -24,8 +25,16 @@
 
         next();
     };
-    app.use(allowCrossDomain);
+    //app.use(allowCrossDomain);
     //app.io.use(allowCrossDomain);
+    //app.io.set('origins', '*:*');
+    //app.io.set('transports', [
+     //   'websocket'
+        /*, 'flashsocket'
+        , 'htmlfile'
+        , 'xhr-polling'
+        , 'jsonp-polling'*/
+    //]);
 
     //io.use(allowCrossDomain);
 
@@ -199,7 +208,7 @@
     app.all('*', function (req, res) {
        console.log('coucou');
         console.log(req.url);
-        //res.send('coucou');
+        res.send('coucou');
     });
 
     //console.log(app.)
@@ -212,7 +221,7 @@
         console.log('new client');
     });
 
-    app.io.on('*', function (socket) {
+    app.io.route('*', function (socket) {
         console.log('an event');
     });
 
