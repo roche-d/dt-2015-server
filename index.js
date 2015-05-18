@@ -5,21 +5,21 @@
 
     var app = require('express.io')();
     app.http().io();
-    //var server = require('http').Server(app);
     var bodyParser = require('body-parser'); // Charge le middleware de gestion des paramètres
     var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
     //var app = express();
 //, {origins: 'http://localhost:63342'}
-    //io.set('origins', '*localhost');
+    //app.io.set('origins', '*:*');
 
     var allowCrossDomain = function(req, res, next) {
         console.log('allow');
         console.log(req.url);
-        console.log(req.headers);
-        //res.header('Access-Control-Allow-Origin', '*');
-        res.header('Access-Control-Allow-Origin',  req.headers.origin);
-        //res.header('Access-Control-Allow-Origin',  "http://localhost:63342");
+        if (req.headers.origin) {
+            res.header('Access-Control-Allow-Origin', req.headers.origin);
+        } else {
+            res.header('Access-Control-Allow-Origin', '*');
+        }
         res.header("Access-Control-Allow-Headers", "X-Requested-With");
         res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
         res.header('Access-Control-Allow-Headers', 'Content-Type');
@@ -28,7 +28,10 @@
         next();
     };
     app.use(allowCrossDomain);
-    //app.io.use(allowCrossDomain);
+    app.io.use(function (socket, next) {
+        console.log('middddddle');
+        return next();
+    });
     //app.io.set('origins', '*:*');
     //app.io.set('transports', [
      //   'websocket'
@@ -223,9 +226,9 @@
         console.log('new client');
     });
 
-    app.io.route('*', function (socket) {
+    /*app.io.route('*', function (socket) {
         console.log('an event');
-    });
+    });*/
 
 
     app.listen(8080);
