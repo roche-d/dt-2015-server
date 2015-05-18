@@ -25,7 +25,7 @@
 
         next();
     };
-    //app.use(allowCrossDomain);
+    app.use(allowCrossDomain);
     //app.io.use(allowCrossDomain);
     //app.io.set('origins', '*:*');
     //app.io.set('transports', [
