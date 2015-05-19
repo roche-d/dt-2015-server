@@ -80,13 +80,29 @@
             step: 1
         };
     }
+    function fmtDate(origin) {
+        var idx = origin.indexOf('T');
+        console.log(origin);
+        console.log(idx);
+        if (idx > 0) {
+            return origin.slice(0, idx);
+        }
+        return origin;
+    };
+
     function assignOffer(client, data) {
+        console.log('assign offer');
+        console.log(client);
+        console.log(data);
         if (client.currentReq) {
             client.currentReq.offerCount++;
-            client.offers.push({
+            client.currentReq.offers.push({
                 price: data.price,
                 msg: data.msg,
-                date: data.date
+                date: fmtDate(data.date),
+                garage: data.garage,
+                tel: data.tel,
+                rating: data.rating
             });
         }
     }
