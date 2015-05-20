@@ -10,7 +10,6 @@
 
 
     var allowCrossDomain = function(req, res, next) {
-        console.log('allow');
         console.log(req.url);
         if (req.headers.origin) {
             res.header('Access-Control-Allow-Origin', req.headers.origin);
@@ -33,17 +32,6 @@
         console.log('middddddle');
         return next();
     });
-    //app.io.set('origins', '*:*');
-    //app.io.set('transports', [
-     //   'websocket'
-        /*, 'flashsocket'
-        , 'htmlfile'
-        , 'xhr-polling'
-        , 'jsonp-polling'*/
-    //]);
-
-    //io.use(allowCrossDomain);
-
 
     /* ADD a new Client or return the identified */
     function getClient(contract) {
@@ -91,9 +79,6 @@
     };
 
     function assignOffer(client, data) {
-        console.log('assign offer');
-        console.log(client);
-        console.log(data);
         if (client.currentReq) {
             client.currentReq.offerCount++;
             client.currentReq.offers.push({
@@ -150,8 +135,6 @@
     });
 
     app.get('/api/getAllRequest', function (req, res) {
-        console.log('all req ?');
-        console.log(req.query);
         if (!(req.query || req.query == 'fslkj45k54kjh')) {
             res.json({
                 res: false,
@@ -250,9 +233,8 @@
     });
 
     app.post('/api/login', urlencodedParser, function (req, res) {
-       console.log('new login');
-        //console.log(req.body);
         if (req.body && req.body.contract && req.body.contract.length > 0) {
+            console.log('new login');
             console.log('contract is ok : ' + req.body.contract);
             res.status(200).json({
                 res: true,
@@ -273,24 +255,17 @@
     });
 
     app.all('*', function (req, res) {
-       console.log('coucou');
         console.log(req.url);
         res.send('coucou');
     });
-
-    //console.log(app.)
 
 
     /* REALTIME EVENT */
     //var io = require('socket.io')(server);
 
     app.io.on('connection', function (socket) {
-        console.log('new client');
+        console.log('new client on realtime engine');
     });
-
-    /*app.io.route('*', function (socket) {
-        console.log('an event');
-    });*/
 
 
     app.listen(8080);
